@@ -1,0 +1,20 @@
+
+components:
+
+  parameters:
+    x-trackingid:
+      name: x-trackingid
+      in: header
+      description: A recommended tracking ID that can be supplied to Pexip support to troubleshoot a request.
+      schema:
+        type: string
+        format: uuid
+        default: 26e04808-c886-4a1f-be37-7c62400e6baa
+
+    user-agent:
+      name: user-agent
+      in: header
+      description: A recommended User Agent so that Pexip can identify the client sending the request.
+      schema:
+        type: string
+        default: ProductName/1.0 (EndpointType; EndpointSoftwareVersion)

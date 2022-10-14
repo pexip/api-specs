@@ -1,0 +1,70 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: OTJ Token Endpoint
+  description: >
+    An API for generating access tokens for OTJ clients.
+
+servers:
+  - url: https://auth.otj.pexip.io
+security:
+  - basicAuth: []
+
+paths:
+  /oauth/token:
+    post:
+      summary: Get an access token.
+      tags:
+        - Token Endpoint
+      parameters:
+        - $ref: "components.yaml#/components/parameters/x-trackingid"
+      requestBody:
+        description: Required to specify which access token type is required, currently only client_credentials is supported.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - grant_type
+              properties:
+                grant_type:
+                  type: string
+                  description: Type of access token to retrieve
+                  example: client_credentials
+
+      responses:
+        "200":
+          description: Success response containing access token and associated metadata.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Unauthorized request
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Base64 encoded string of clientID:clientSecret with clientID and clientSecret replaced with the clientID and clientSecret.
+
+
+  schemas:
+    TokenResponse:
+      type: object
+      description: Access token and associated metadata.
+      properties:
+        access_token:
+          description: Access token
+          type: string
+        token_type:
+            description: Type of access token
+            type: string
+            enum:
+              - "bearer"
+        expires_in:
+          description: Number of seconds the token is valid for
+          type: integer
+          example: 3600
