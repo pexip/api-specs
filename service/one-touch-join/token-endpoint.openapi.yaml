@@ -52,7 +52,6 @@ components:
   schemas:
     TokenResponse:
       type: object
-      description: Access token and associated metadata.
       properties:
         access_token:
           description: Access token
