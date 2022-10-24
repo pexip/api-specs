@@ -13,11 +13,10 @@ security:
 paths:
   /oauth/token:
     post:
-      summary: Get an access token.
-      tags:
-        - Token Endpoint
+      summary: Get an access token
       parameters:
-        - $ref: "components.yaml#/components/parameters/x-trackingid"
+        - $ref: "#/components/parameters/x-trackingid"
+        - $ref: "#/components/parameters/user-agent"
       requestBody:
         description: Required to specify which access token type is required, currently only client_credentials is supported.
         required: true
@@ -41,7 +40,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenResponse"
         "401":
-          description: Unauthorized request
+          description: Unauthorized
 
 components:
   securitySchemes:
@@ -68,3 +67,23 @@ components:
           description: Number of seconds the token is valid for
           type: integer
           example: 3600
+
+  parameters:
+
+    x-trackingid:
+      name: x-trackingid
+      in: header
+      description: A recommended tracking ID that can be supplied to Pexip support to troubleshoot a request.
+      schema:
+        type: string
+        format: uuid
+        example: 26e04808-c886-4a1f-be37-7c62400e6baa
+
+    user-agent:
+      name: user-agent
+      in: header
+      description: A recommended User Agent so that Pexip can identify the client sending the request.
+      schema:
+        type: string
+        example: ProductName/1.0 (EndpointType; EndpointSoftwareVersion)
+

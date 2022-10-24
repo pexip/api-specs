@@ -18,8 +18,8 @@ paths:
         - meetings
       description: Get the next 10 meetings for the video system's registered mailbox calendar.
       parameters:
-        - $ref: "components.yaml#/components/parameters/x-trackingid"
-        - $ref: "components.yaml#/components/parameters/user-agent"
+        - $ref: "#/components/parameters/x-trackingid"
+        - $ref: "#/components/parameters/user-agent"
 
       responses:
         "200":
@@ -109,3 +109,22 @@ components:
           type: integer
           example: 1
           description: A count of the number of meetings contained in the response.
+
+  parameters:
+    x-trackingid:
+      name: x-trackingid
+      in: header
+      description: A recommended tracking ID that can be supplied to Pexip support to troubleshoot a request.
+      schema:
+        type: string
+        format: uuid
+        example: 26e04808-c886-4a1f-be37-7c62400e6baa
+
+    user-agent:
+      name: user-agent
+      in: header
+      description: A recommended User Agent so that Pexip can identify the client sending the request.
+      schema:
+        type: string
+        example: ProductName/1.0 (EndpointType; EndpointSoftwareVersion)
+
