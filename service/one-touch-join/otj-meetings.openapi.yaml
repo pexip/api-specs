@@ -90,7 +90,7 @@ components:
           description: The end time of the meeting.
           type: string
           format: date-time
-          example: "2021-12-12T10:00:00"
+          example: "2021-12-21T10:00:00"
         alias:
           description: The alias that can be used to join video enabled meetings.
           type: string
