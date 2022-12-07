@@ -1,10 +1,9 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
-  title: One-Touch Join Meetings API
+  version: 1.1.0
+  title: Meetings API
   description: >-
     Returns a list of meetings that belong to the mailbox calendar associated with the video system making the request.
-    A maximum of the next 10 meetings are returned. 
 
 servers:
   - url: https://otj.pexip.io
@@ -16,10 +15,13 @@ paths:
     get:
       tags:
         - meetings
-      description: Get the next 10 meetings for the video system's registered mailbox calendar.
+      description: Get the next meetings for the video system's registered mailbox calendar, ordered by the soonest start time.
       parameters:
         - $ref: "#/components/parameters/x-trackingid"
         - $ref: "#/components/parameters/user-agent"
+        - $ref: "#/components/parameters/startTime"
+        - $ref: "#/components/parameters/endTime"
+        - $ref: "#/components/parameters/limit"
 
       responses:
         "200":
@@ -50,12 +52,13 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: Generate an access token using the [OTJ Token API](https://developer.pexip.com/cloud-one-touch-join/token-api).
 
   responses:
     Unauthorized:
       description: The request was missing or supplied an invalid/expired bearer token
     NotFound:
-      description: No videosystem was found for the request's subject (Client ID)
+      description: No associated mailbox was found for the requested video system
     TooManyRequests:
       description: The client has made too many requests and has been throttled
     InternalServerError:
@@ -74,23 +77,21 @@ components:
         subject:
           description: The subject of the meeting.
           type: string
-          maxLength: 200
           example: My important meeting
         organizerName:
           description: The meeting organizer's full name.
           type: string
-          maxLength: 200
           example: Example user
         startTime:
-          description: The start time of the meeting.
+          description: The start time of the meeting in RFC-3339 format.
           type: string
           format: date-time
-          example: "2021-12-21T09:00:00"
+          example: "2021-12-21T09:00:00Z"
         endTime:
-          description: The end time of the meeting.
+          description: The end time of the meeting in RFC-3339 format.
           type: string
           format: date-time
-          example: "2021-12-21T10:00:00"
+          example: "2021-12-21T10:00:00Z"
         alias:
           description: The alias that can be used to join video enabled meetings.
           type: string
@@ -110,7 +111,6 @@ components:
           description: A count of the number of meetings contained in the response.
 
   parameters:
-
     x-trackingid:
       name: x-trackingid
       in: header
@@ -128,3 +128,28 @@ components:
         type: string
         example: ProductName/1.0 (EndpointType; EndpointSoftwareVersion)
 
+    startTime:
+      name: startTime
+      in: query
+      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `endTime`. Requires an RFC-3339 formatted date-time.
+      schema:
+        type: string
+        format: date-time
+
+    endTime:
+      name: endTime
+      in: query
+      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `startTime`. Requires an RFC-3339 formatted date-time.
+      schema:
+        type: string
+        format: date-time
+
+    limit:
+      name: limit
+      in: query
+      description: Optionally limits how many many meetings can be contained in the response.
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
