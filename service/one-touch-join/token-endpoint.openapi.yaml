@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: 1.0.1
   title: Token API
   description: >
-    An API for generating access tokens for the [OTJ Meetings API](https://developer.pexip.com/cloud-one-touch-join/meetings-api).
+    An API for generating access tokens for the [One-Touch Join Meetings API](https://developer.pexip.com/docs/category/meetings-api).
 
 servers:
   - url: https://auth.otj.pexip.io
@@ -30,7 +30,7 @@ paths:
               properties:
                 grant_type:
                   type: string
-                  description: Type of oauth flow. Only client_credentials is supported.
+                  description: Type of OAuth flow. Only client_credentials is supported.
                   default: client_credentials
 
       responses:

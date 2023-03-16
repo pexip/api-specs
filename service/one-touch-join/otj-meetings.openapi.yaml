@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0
+  version: 1.3.1
   title: Meetings API
   description: >-
     Returns a list of meetings that belong to the mailbox calendar associated with the video system making the request.
@@ -15,6 +15,7 @@ paths:
     get:
       tags:
         - meetings
+      summary: Get meetings
       description: Get the next meetings for the video system's registered mailbox calendar, ordered by the soonest start time.
       parameters:
         - $ref: "#/components/parameters/x-trackingid"
@@ -22,6 +23,7 @@ paths:
         - $ref: "#/components/parameters/startTime"
         - $ref: "#/components/parameters/endTime"
         - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/idsOnly"
 
       responses:
         "200":
@@ -34,7 +36,29 @@ paths:
                   metadata:
                     $ref: "#/components/schemas/Meta"
                   meetings:
-                    $ref: "#/components/schemas/Meetings"
+                    oneOf:
+                      - $ref: "#/components/schemas/Meetings"
+                      - $ref: "#/components/schemas/MeetingIDs"
+              examples:
+                Meetings:
+                  value:
+                    metadata:
+                      count: 1
+                    meetings:
+                      - id: MSpkYzE3Njc0Yy04MWQ5LTRhZGItYmZiMi04ZdFpHRTNaR1F6WGhyZWFkLnYy
+                        subject: My important meeting
+                        organizerName: Example user
+                        organizerEmail: example.user@example.com
+                        startTime: 2021-12-21T09:00:00Z
+                        endTime: 2021-12-21T10:00:00Z
+                        alias: name@example.com
+                IDsOnly:
+                  value:
+                    metadata:
+                      count: 1
+                    meetings:
+                      - id: MSpkYzE3Njc0Yy04MWQ5LTRhZGItYmZiMi04ZdFpHRTNaR1F6WGhyZWFkLnYy
+
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -52,7 +76,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Generate an access token using the [OTJ Token API](https://developer.pexip.com/cloud-one-touch-join/token-api).
+      description: Generate an access token using the [One-Touch Join Token API](https://developer.pexip.com/docs/category/token-api).
 
   responses:
     Unauthorized:
@@ -107,6 +131,19 @@ components:
       items:
         $ref: "#/components/schemas/Meeting"
 
+    MeetingID:
+      type: object
+      properties:
+        id:
+          description: The meeting ID associated with this meeting.
+          type: string
+          example: MSpkYzE3Njc0Yy04MWQ5LTRhZGItYmZiMi04ZdFpHRTNaR1F6WGhyZWFkLnYy
+
+    MeetingIDs:
+      type: array
+      items:
+        $ref: "#/components/schemas/MeetingID"
+
     Meta:
       type: object
       properties:
@@ -136,7 +173,7 @@ components:
     startTime:
       name: startTime
       in: query
-      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `endTime`. Requires an RFC-3339 formatted date-time.
+      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `endTime`. Requires an RFC-3339 formatted date-time. May be omitted.
       schema:
         type: string
         format: date-time
@@ -144,7 +181,7 @@ components:
     endTime:
       name: endTime
       in: query
-      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `startTime`. Requires an RFC-3339 formatted date-time.
+      description: Optionally filters the meetings contained in the response. Must be used in conjunction with `startTime`. Requires an RFC-3339 formatted date-time. May be omitted.
       schema:
         type: string
         format: date-time
@@ -152,9 +189,16 @@ components:
     limit:
       name: limit
       in: query
-      description: Optionally limits how many many meetings can be contained in the response.
+      description: Optionally limits how many many meetings can be contained in the response. Defaults to 10 if omitted.
       schema:
         type: integer
-        default: 10
+        default: null
         minimum: 1
         maximum: 100
+
+    idsOnly:
+      name: idsOnly
+      in: query
+      description: Optionally limits request to only get meeting IDs. May be omitted.
+      schema:
+        default: null
